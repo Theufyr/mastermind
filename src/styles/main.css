@@ -1,0 +1,235 @@
+@import "reset.css";
+
+@font-face {
+  font-family: Title;
+  src: url(../assets/fonts/Alba.ttf);
+}
+@font-face {
+  font-family: Main;
+  src: url(../assets/fonts/Junicode.ttf);
+}
+
+:root {
+	/* Mobile-first */
+    font-size: 14px;
+    min-width: 360px;
+    width: 100%;
+
+    /* Custom properties */
+    --color-01: #382d01;
+    --color-02: #cfc57a;
+    --color-03: black;
+    --color-04: brown;
+    --color-05: red;
+    --color-06: orange;
+    --color-07: yellow;
+    --color-08: green;
+    --color-09: #00c8ff;
+    --color-10: white;
+
+
+    --background-01: #c7b155;
+    --background-02: #c29c03;
+    --background-03: #675202;
+    --background-04: #d7dba8;
+    --background-05: #b6ed9e;
+    --background-06: #94ca5c;
+
+    
+    --shadow-01: -0.1rem 0.2rem 0.5rem rgb(0, 0, 0, 0.5);
+    --shadow-02: -0.1rem 0.2rem 0.3rem rgb(0, 0, 0, 0.5);
+    --shadow-03: 0rem 0.1rem 0.2rem rgb(0, 0, 0, 0.5);
+    --shadow-04: 0rem 0.1rem 0.2rem rgba(255, 255, 255, 0.5);
+
+    font-family: Main;
+    color: var(--color-01);
+    background-color: var(--background-01);
+}
+
+body {
+    width: 100%;
+    height: 100%;
+}
+
+b {
+    font-weight: bold;
+}
+
+header, button:hover {
+    color: var(--color-02);
+    background: linear-gradient(var(--background-03), var(--color-01));
+    box-shadow: var(--shadow-01);
+}
+header {
+    padding: 0.1rem 0rem;
+}
+
+h1, h2, h3 {
+    text-align: center;
+}
+h1 {
+    font-size: 2.5rem;
+    font-family: Title;
+    text-shadow: var(--shadow-01);
+}
+h2 {
+    font-size: 1.5rem;
+    font-family: Title;
+    text-shadow: var(--shadow-04);
+}
+h3 {
+    font-size: 1.1rem;
+    font-weight: bold;
+    font-style: italic;
+}
+.triangle {
+    color: var(--background-03);
+    text-shadow: var(--shadow-03);
+}
+.dotblack {
+    color: var(--color-01);
+    text-shadow: var(--shadow-04);
+}
+.dotwhite {
+    color: var(--color-02);
+    text-shadow: var(--shadow-03);
+}
+
+section, input, button {
+    padding: 0.1rem 0.5rem 0.5rem 0.5rem;
+    color: var(--color-01);
+    font-weight: bold;
+    outline: none;
+    background: linear-gradient(var(--background-04), var(--background-01));
+    box-shadow: var(--shadow-03);
+    border-radius: 0.5rem;
+}
+#multi_colors {
+    padding: 0 0.5rem;
+    color: var(--background-03);
+    background: var(--background-03);
+}
+button, #launch_game, #rules_title, #game_title {
+    cursor: pointer;
+}
+button.off, button:hover.off {
+    color: var(--color-01);
+    background: linear-gradient(var(--background-04), var(--background-01));
+    box-shadow: var(--shadow-03);
+    cursor: default;
+}
+button.checked, button:hover.checked {
+    color: var(--color-08);
+    background: linear-gradient(var(--background-05), var(--background-06));
+}
+#choose_game, #game_status {
+    text-align: center;
+}
+section {
+    margin: 1rem;
+    font-weight: normal;
+    background: linear-gradient(var(--background-01), var(--background-02));
+}
+div {
+    margin: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* board game */
+#game div, #game_status, #example, #example div {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.2rem;
+    margin: 0 0 0.2rem 0;
+}
+#game_board, #example {
+    justify-self: center;
+    justify-items: center;
+    color: var(--color-01);
+    background-color: var(--background-02);
+    border-radius: 0.5rem;
+}
+#game_board>div, #example>div {
+    display:flex;
+    flex:wrap;
+    gap: 1rem;
+}
+#game_board>div>div, #example>div>div {
+    height:2.5rem;
+    display:flex;
+    justify-items: top;
+    justify-content: top;
+    user-select: none;
+    background-color: var(--background-03);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+#example {
+    width: 50%;
+    min-width: 220px;
+    margin-top: 0.5rem;
+    justify-self: left;
+    box-shadow: var(--shadow-03);
+    cursor: default;
+}
+.pawn, .result {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    text-align: center;
+}
+.pawn {
+    font-size: 3rem;
+    line-height: 0.2rem;
+}
+.result {
+    font-size: 1rem;
+    line-height: 1.3rem;
+}
+
+/* Couleurs */
+.black, .brown, .red, .orange, .yellow, .green, .blue, .white {
+    text-shadow: var(--shadow-03);
+    cursor: pointer;
+}
+.black {
+    color: var(--color-03);
+}
+.brown {
+    color: var(--color-04);
+}
+.red {
+    color: var(--color-05);
+}
+.orange {
+    color: var(--color-06);
+}
+.yellow {
+    color: var(--color-07);
+}
+.green {
+    color: var(--color-08);
+}
+.blue {
+    color: var(--color-09);
+}
+.white {
+    color: var(--color-10);
+}
+
+/* Responsive */
+@media (min-width:768px) {
+    :root {
+        font-size: 16px;
+    }
+}
+@media (min-width:1024px) {
+    :root {
+        font-size: 18px;
+    }
+}
+@media (min-width:1280px) {
+    :root {
+        font-size: 20px;
+    }
+}

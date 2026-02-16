@@ -1,0 +1,222 @@
+// DECLARATION DE L'ETAT DU JEU
+const colors = ["black", "brown", "red", "orange", "yellow", "green", "blue", "white"];
+// on met en mémoire la combinaison secrète
+const secretCode = [];
+// on met en mémoire le type de partie
+// nombre de couleurs à deviner
+// si les couleurs peuvent être répétées
+const gameType = {
+	pawnNumber: 2,
+	multiColor: false
+}
+// on met en mémoire les couleurs choisies à chaque ligne
+// 5 lignes en clés dont les valeurs sont un tableau contenant
+// la validation (faite : Y, ou pas : N) et les couleurs des 5 pions possibles
+// [N/Y, couleur du pion 1, couleur du pion 2... ]
+let boardMemory = [
+	["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"],
+];
+
+
+// PREPARATION DES AFFICHAGES
+// affichage des règles du jeu
+const rules = document.getElementById("rules");
+rules.style.display = "block";
+const rulesT = document.getElementById("r_triangle");
+rulesT.textContent = "▾";
+document.getElementById("rules_title").addEventListener('click', () => {
+	rules.style.display = (rules.style.display == "block") ? "none" : "block";
+	rulesT.textContent = (rules.style.display == "block") ? "▾" : "▸";
+});
+
+// affichage du formulaire
+const chooseGame = document.getElementById("choose_game");
+chooseGame.style.display = "block";
+const chooseGameT = document.getElementById("lg_triangle");
+chooseGameT.textContent = "▾";
+document.getElementById("launch_game").addEventListener('click', () => {
+	chooseGame.style.display = (chooseGame.style.display == "block") ? "none" : "block";
+	chooseGameT.textContent = (chooseGame.style.display == "block") ? "▾" : "▸";
+});
+
+// initialisation du formulaire
+const inputNumber = document.getElementById("colors_nb");
+inputNumber.value = 2;
+const inputMultiColors = document.getElementById("multi_colors");
+inputMultiColors.checked = false;
+const gameStatus = document.getElementById("game_status");
+gameStatus.textContent = "";
+
+// plateau de jeu
+const gameDisplay = document.getElementById("game");
+gameDisplay.style.display = "none";
+const boardGame = document.getElementById("game_board");
+boardGame.style.display = "none";
+const boardGameT = document.getElementById("gt_triangle");
+chooseGameT.textContent = "▸";
+document.getElementById("game_title").addEventListener('click', () => {
+	boardGame.style.display = (boardGame.style.display == "block") ? "none" : "block";
+	gameStatus.style.display = boardGame.style.display;
+	boardGameT.textContent = (boardGame.style.display == "block") ? "▾" : "▸";
+});
+
+
+// CREATION DU PLATEAU DE JEU
+// générer le plateau de jeu
+function boardDisplay() {
+	// on vide le plateau de jeu s'il existe déjà
+	while (boardGame.firstChild) {
+		boardGame.removeChild(boardGame.firstChild);
+	}
+	// ligne à valider
+	let activeLine = "no";
+	// on crée 12 lignes
+	for (let i = 0; i < 12; i++) {
+		// on crée une ligne de 5 pions, vide et inactive par défaut
+		const linePawns = document.createElement("div");
+		linePawns.id = "line_pawn_" + i;
+		// on crée une ligne de 5 résultats
+		const lineResults = document.createElement("div");
+		lineResults.id = "line_result_" + i;
+		// on crée un bouton pour valider les choix de couleurs
+		const sendColors = document.createElement("button");
+		sendColors.id = "send_colors_" + i;
+		sendColors.type = "submit";
+		sendColors.className = "off";
+		sendColors.title = "";
+		// ligne à valider
+		const valid = boardMemory[i][0];
+		if ((activeLine === "no") && (valid === "N")) {
+			activeLine = "current";
+			sendColors.className = "on";
+			sendColors.title = "Valider les choix de couleurs";
+			sendColors.addEventListener('click', () => {
+				// on garde en mémoire la validation
+				boardMemory[i][0] = "Y";
+				// on actualise le plateau de jeu
+				boardDisplay();
+			});
+		}
+		// si la ligne est déjà validée on passe le bouton en vert
+		if (valid === "Y") {
+			sendColors.className = "off checked";
+			sendColors.title = "Choix de couleurs déjà validés";
+		}
+		sendColors.textContent = "✓";
+		for (let j = 1; j <= 5; j++) {
+			// pions
+			const pawn = document.createElement("div");
+			pawn.textContent = "●";
+			pawn.id = "pawn_" + j;
+			pawn.className = "pawn";
+			let pawnColor = 0;
+			const currentColor = (boardMemory[i][j] !== undefined) ? boardMemory[i][j] : 0;
+			pawn.classList.add(colors[currentColor]);
+			// si ce pion est dans la ligne active et qu'elle n'a pas été validée
+			if (activeLine === "current") {
+				pawnColor = (boardMemory[i][j] !== undefined) ? boardMemory[i][j] : pawnColor;
+				// on garde en mémoire la nouvelle couleur
+				if (boardMemory[i][j] === undefined) {
+					boardMemory[i].push(pawnColor);
+				} else {
+					boardMemory[i][j] = pawnColor;
+				}
+				pawn.classList.remove(colors[currentColor]);
+				pawn.classList.add(colors[pawnColor]);
+				pawn.addEventListener('click', () => {
+					const actualColor = colors.indexOf(pawn.classList[1]);
+					// on retire la couleur actuelle
+					pawn.classList.remove(colors[actualColor]);
+					// on affiche la couleur suivante de la liste
+					// ou on revient à la première si on est en fin de liste
+					let nextColor = (actualColor + 1);
+					nextColor = (actualColor > 7) ? 0 : nextColor;
+					pawn.classList.add(colors[nextColor]);
+					// on garde en mémoire la nouvelle couleur
+					boardMemory[i][j] = nextColor;
+				});
+			}
+			linePawns.appendChild(pawn);
+			// résultats
+			const result = document.createElement("div");
+			result.textContent = "◎";
+			result.id = "result_" + j;
+			result.className = "result";
+			// si la ligne est validée, on affiche les résultats
+			if (valid === "Y") {
+				// couleur présente dans la combinaison secrète
+				if (secretCode.includes(colors[pawnColor])) {
+					result.classList.add("dotwhite");
+				// couleur à la bonne place
+				} else if (secretCode[j] === colors[pawnColor]) {
+					result.classList.add("dotblack");
+				}
+			}
+			lineResults.appendChild(result);
+		}
+		activeLine = (activeLine === "current") ? "done" : activeLine;
+		const lineAll = document.createElement("div");
+		lineAll.appendChild(lineResults);
+		lineAll.appendChild(linePawns);
+		lineAll.appendChild(sendColors);
+		boardGame.appendChild(lineAll);
+	}
+	boardGameT.textContent = "▾";
+	gameStatus.style.display = "block";
+	boardGame.style.display = "block";
+	gameDisplay.style.display = "block";
+}
+
+// LANCER LA PARTIE
+// nombre et type de couleurs à découvrir (à choisir en lançant la partie)
+chooseGame.addEventListener('submit', (target) => {
+	target.preventDefault();
+	const colorChoice	= parseInt(inputNumber.value);
+	const numberChoices	= [2, 3, 4, 5];
+	if (numberChoices.includes(colorChoice)) {
+		// couleurs uniques ou multiples
+		const multiColors = (inputMultiColors.checked);
+		const colorsType = (!multiColors) ? "uniques" : "multiples";
+
+		// on réinitialise le formulaire
+		inputNumber.value = 2;
+		inputMultiColors.checked = false;
+		// et on le masque
+		chooseGame.style.display = "none";
+		chooseGameT.textContent = "▸";
+
+		// fonction pour mélanger
+		function shuffleArray(array) {
+			let i = array.length;
+			while (i) {
+				const j = Math.floor(Math.random() * i--);
+				[array[i], array[j]] = [array[j], array[i]];
+			}
+		}
+
+		// création de la combinaison de couleurs
+		const colorsLeft = colors;
+		// on réinitialise le code avant d'en créer un nouveau
+		secretCode.length = 0;
+		for (let i = 0; i < colorChoice; i++) {
+			shuffleArray(colors);
+			// couleurs uniques
+			if (!multiColors) {
+				const singleColor = colorsLeft.splice(0, 1);
+				secretCode.push(singleColor[0]);
+			// couleurs multiples
+			} else {
+				secretCode.push(colors[0]);
+			}
+		}
+		// affichage du type de partie générée
+		gameStatus.textContent = `Combinaison de ${colorChoice} pions à deviner, de couleurs ${colorsType}.`;
+		// réinitialisation de la mémoire
+		boardMemory = [
+			["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"],
+		];
+		// création du plateau de jeu
+		boardDisplay();
+	}
+});
+

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr-FR">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Mastermind</title>
+	<link rel="stylesheet" href="src/styles/main.css" />
+	<script defer src="src/js/main.js" type="module"></script>
+</head>
+
+<body>
+	<header>
+		<h1>Mastermind</h1>
+		<section>
+			<h2 id="rules_title"><span id="r_triangle" class="triangle">▸</span> Règles du jeu</h2>
+			<div id="rules">
+				<p>Tu dois deviner la combinaison secrète en <b>12</b> coups maximum.</p>
+				<p>À chaque coup, choisis la couleur des pions et valide la ligne :</p>
+				<div id="example">
+					<div>
+						<div id="line_pawn_1">
+							<div id="pawn_1" class="pawn blue" title="blue">●</div>
+							<div id="pawn_2" class="pawn brown" title="brown">●</div>
+							<div id="pawn_3" class="pawn yellow" title="yellow">●</div>
+							<div id="pawn_4" class="pawn green" title="green">●</div>
+							<div id="pawn_5" class="pawn red" title="red">●</div>
+						</div>
+						<button id="send_colors_1" type="submit" class="off checked" title="Valider les choix de couleurs">✓</button>
+					</div>
+				</div>
+				<p>Après chaque coup, tu as droit à des indices :</p>
+				<p>⇀ <span class="dotblack">◉</span> indique un pion de la bonne couleur à la bonne place</p>
+				<p>⇀ <span class="dotwhite">◎</span> indique un pion de la bonne couleur à la mauvaise place</p>
+				<p>⇀ pas d'indication si la couleur du pion n'existe pas dans la combinaison</p>
+			</div>
+		</section>
+	</header>
+	<section>
+		<h2 id="launch_game"><span id="lg_triangle" class="triangle">▸</span> Lancer une partie</h2>
+		<form action="" method="post" id="choose_game">
+			<h3>Choisis les particularités de la combinaison secrète :</h3>
+			<div>
+				<label for="colors_nb">Le nombre de pions à deviner (2 à 5)</label>
+				<input type="number" id="colors_nb" value="2" min="2" max="5" step="1">
+			</div>
+			<div>
+				<p>Plus de difficulté :</p>
+				<label for="multi_colors">Couleurs présentes plusieurs fois ?</label>
+				<input type="checkbox" name="multi_colors" id="multi_colors"> Oui
+			</div>
+			<div>
+				<button type="submit">Lancer la partie !</button>
+			</div>
+		</form>
+	</section>
+	<section id="game">
+		<h2 id="game_title"><span id="gt_triangle" class="triangle">▸</span> Plateau de jeu</h2>
+		<p id="game_status"></p>
+		<div id="game_board">
+		</div>
+	</section>
+</body>
+
+</html>
