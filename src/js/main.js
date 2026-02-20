@@ -67,7 +67,7 @@ gameDisplay.style.display = "none";
 const boardGame = document.getElementById("game_board");
 boardGame.style.display = "none";
 const boardGameT = document.getElementById("gt_triangle");
-chooseGameT.textContent = "▸";
+boardGameT.textContent = "▸";
 document.getElementById("game_title").addEventListener('click', () => {
 	boardGame.style.display = (boardGame.style.display == "block") ? "none" : "block";
 	gameStatus.style.display = boardGame.style.display;
@@ -217,6 +217,9 @@ chooseGame.addEventListener('submit', (target) => {
 		// et on le masque
 		chooseGame.style.display = "none";
 		chooseGameT.textContent = "▸";
+		// on masque aussi les règles du jeu
+		rules.style.display = "none";
+		rulesT.textContent = "▸";
 
 		// création de la combinaison de couleurs
 		// on réinitialise le code secret avant d'en créer un nouveau
@@ -243,7 +246,7 @@ chooseGame.addEventListener('submit', (target) => {
 				secretCode.push(colorsShuffled[0]);
 			}
 		}
-		console.log(secretCode);
+		console.table(secretCode);
 		// affichage du type de partie générée
 		gameStatus.textContent = `Combinaison de ${colorChoice} pions à deviner, de couleurs ${colorsType}.`;
 		// réinitialisation de la mémoire
