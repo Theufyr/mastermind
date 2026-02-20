@@ -34,6 +34,7 @@
     --background-04: #d7dba8;
     --background-05: #b6ed9e;
     --background-06: #94ca5c;
+    --background-07: #896e02;
 
     
     --shadow-01: -0.1rem 0.2rem 0.5rem rgb(0, 0, 0, 0.5);
@@ -87,11 +88,11 @@ h3 {
     text-shadow: var(--shadow-03);
 }
 .dotblack {
-    color: var(--color-01);
+    color: var(--color-03);
     text-shadow: var(--shadow-04);
 }
 .dotwhite {
-    color: var(--color-02);
+    color: var(--color-10);
     text-shadow: var(--shadow-03);
 }
 
@@ -109,7 +110,8 @@ section, input, button {
     color: var(--background-03);
     background: var(--background-03);
 }
-button, #launch_game, #rules_title, #game_title {
+button, #launch_game, #rules_title, #game_title,
+.dotblack, .dotwhite {
     cursor: pointer;
 }
 button.off, button:hover.off {
@@ -163,6 +165,9 @@ div {
     background-color: var(--background-03);
     border-radius: 0.5rem;
     overflow: hidden;
+}
+#game_board>div>div.result_line {
+    background-color: var(--background-07);
 }
 #example {
     width: 50%;

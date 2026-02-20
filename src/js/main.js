@@ -1,5 +1,18 @@
+import shuffleArray from './utils/shuffleArray.js';
+import deepCopy from './utils/deepCopy.js';
+
 // DECLARATION DE L'ETAT DU JEU
 const colorsList = ["black", "brown", "red", "orange", "yellow", "green", "blue", "white"];
+const colorsFr = {
+	black: "Noir",
+	brown: "Brun",
+	red: "Rouge",
+	orange: "Orange",
+	yellow: "Jaune",
+	green: "Vert",
+	blue: "Bleu",
+	white: "Blanc",
+};
 
 // on met en mémoire la combinaison secrète
 const secretCode = [];
@@ -7,7 +20,7 @@ const secretCode = [];
 // nombre de couleurs à deviner
 // si les couleurs peuvent être répétées
 const gameType = {
-	pawnNumber: 2,
+	pawnTotal: 2,
 	multiColor: false
 }
 // on met en mémoire les couleurs choisies à chaque ligne
@@ -79,6 +92,7 @@ function boardDisplay() {
 		// on crée une ligne de 5 résultats
 		const lineResults = document.createElement("div");
 		lineResults.id = "line_result_" + i;
+		lineResults.className = "result_line";
 		// on crée un bouton pour valider les choix de couleurs
 		const sendColors = document.createElement("button");
 		sendColors.id = "send_colors_" + i;
@@ -111,10 +125,15 @@ function boardDisplay() {
 			pawn.id = "pawn_" + j;
 			pawn.className = "pawn";
 			let pawnColor = 0;
-			const currentColor = (boardMemory[i][j] !== undefined) ? boardMemory[i][j] : 0;
-			pawn.classList.add(colorsList[currentColor]);
+			const currentColor = (boardMemory[i][j] !== undefined) ? boardMemory[i][j] : pawnColor;
+			// on ne colore le pion que s'il est dans la partie
+			if (j <= gameType.pawnTotal) {
+				pawn.classList.add(colorsList[currentColor]);
+				pawn.title = colorsFr[colorsList[currentColor]];
+			}
+			// si ce pion est dans la partie et
 			// si ce pion est dans la ligne active et qu'elle n'a pas été validée
-			if (activeLine === "current") {
+			if ((j <= gameType.pawnTotal) && (activeLine === "current")) {
 				pawnColor = (boardMemory[i][j] !== undefined) ? boardMemory[i][j] : pawnColor;
 				// on garde en mémoire la nouvelle couleur
 				if (boardMemory[i][j] === undefined) {
@@ -124,6 +143,7 @@ function boardDisplay() {
 				}
 				pawn.classList.remove(colorsList[currentColor]);
 				pawn.classList.add(colorsList[pawnColor]);
+				pawn.title += ", cliquer pour changer de couleur";
 				pawn.addEventListener('click', () => {
 					const actualColor = colorsList.indexOf(pawn.classList[1]);
 					// on retire la couleur actuelle
@@ -131,8 +151,10 @@ function boardDisplay() {
 					// on affiche la couleur suivante de la liste
 					// ou on revient à la première si on est en fin de liste
 					let nextColor = (actualColor + 1);
-					nextColor = (actualColor > 7) ? 0 : nextColor;
+					nextColor = (actualColor >= 7) ? 0 : nextColor;
 					pawn.classList.add(colorsList[nextColor]);
+					// on change le nom du pion avec celui de la nouvelle couleur
+					pawn.title = colorsFr[colorsList[nextColor]] + ", cliquer pour changer de couleur";
 					// on garde en mémoire la nouvelle couleur
 					boardMemory[i][j] = nextColor;
 				});
@@ -143,15 +165,20 @@ function boardDisplay() {
 			result.textContent = "◎";
 			result.id = "result_" + j;
 			result.className = "result";
+			// si ce pion est dans la partie et
 			// si la ligne est validée, on affiche les résultats
-			if (valid === "Y") {
-			console.log(secretCode, j, secretCode[j], colorsList[pawnColor]);
-				// couleur présente dans la combinaison secrète
-				if (secretCode.includes(colorsList[pawnColor])) {
-					result.classList.add("dotwhite");
-				// couleur à la bonne place
-				} else if (secretCode[j] === colorsList[pawnColor]) {
-					result.classList.add("dotblack");
+			if ((j <= gameType.pawnTotal) && (valid === "Y")) {
+				if (secretCode.includes(colorsList[currentColor])) {
+					// couleur présente dans la combinaison secrète
+					let dotColor = "dotwhite";
+					result.title = "Pion de la bonne couleur à la mauvaise place";
+					// couleur à la bonne place
+					if (secretCode[j - 1] === colorsList[currentColor]) {
+						result.textContent = "◉";
+						dotColor = "dotblack";
+						result.title = "Pion de la bonne couleur à la bonne place";
+					}
+					result.classList.add(dotColor);
 				}
 			}
 			lineResults.appendChild(result);
@@ -180,6 +207,10 @@ chooseGame.addEventListener('submit', (target) => {
 		const multiColors = (inputMultiColors.checked);
 		const colorsType = (!multiColors) ? "uniques" : "multiples";
 
+		// sauvegarde des paramètres de la partie
+		gameType.pawnTotal = colorChoice;
+		gameType.multiColor = multiColors;
+
 		// on réinitialise le formulaire
 		inputNumber.value = 2;
 		inputMultiColors.checked = false;
@@ -187,22 +218,13 @@ chooseGame.addEventListener('submit', (target) => {
 		chooseGame.style.display = "none";
 		chooseGameT.textContent = "▸";
 
-		// fonction pour mélanger
-		function shuffleArray(array) {
-			let i = array.length;
-			while (i) {
-				const j = Math.floor(Math.random() * i--);
-				[array[i], array[j]] = [array[j], array[i]];
-			}
-		}
-
 		// création de la combinaison de couleurs
 		// on réinitialise le code secret avant d'en créer un nouveau
 		secretCode.length = 0;
 		// on ne touche pas au tableau originel des couleurs
 		// on le copie pour faire le mélange de couleurs
-		// (en Deep Cpoy indépendante qui n'altèrera pas l'original quand il est modifié)
-		const colorsShuffled = JSON.parse(JSON.stringify(colorsList));
+		// (en Deep Copy indépendante qui n'altèrera pas l'original quand il est modifié)
+		const colorsShuffled = deepCopy(colorsList);
 		// on sélectionne les couleurs en fonction du nb de pions demandés pour la partie
 		
 		for (let i = 0; i < colorChoice; i++) {
@@ -221,7 +243,7 @@ chooseGame.addEventListener('submit', (target) => {
 				secretCode.push(colorsShuffled[0]);
 			}
 		}
-		
+		console.log(secretCode);
 		// affichage du type de partie générée
 		gameStatus.textContent = `Combinaison de ${colorChoice} pions à deviner, de couleurs ${colorsType}.`;
 		// réinitialisation de la mémoire
