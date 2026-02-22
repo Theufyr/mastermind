@@ -250,7 +250,6 @@ function boardDisplay() {
 				++scores.points
 				// +1 par coups non utilisés (en nombre de pions)
 				scores.points += ((11 - i) * gameType.pawnTotal);
-				console.log (((11 - i) * gameType.pawnTotal), (11 - i),gameType.pawnTotal)
 				gameScoresDone.textContent = updateScores("done", scores);
 				gameScoresWon.textContent = updateScores("won", scores);
 				gameScoresPoints.textContent = updateScores("points", scores);
@@ -334,7 +333,7 @@ chooseGame.addEventListener('submit', (target) => {
 				secretCode.push(colorsShuffled[0]);
 			}
 		}
-		console.table(secretCode);
+		
 		// affichage du type de partie générée
 		gameStatus.textContent = `Combinaison de span ${colorChoice} pions à deviner, une couleur ${colorsType} être présente plusieurs fois dans la combinaison.`;
 		// réinitialisation de la mémoire
