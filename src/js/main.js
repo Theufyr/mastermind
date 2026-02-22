@@ -155,7 +155,6 @@ function saveUpdate(saving = false) {
 	// affichage du type de partie
 	gameStatusPawns.textContent = gameSave.gameStatusDisplay.pawnTotal;
 	gameStatusMulti.textContent = gameSave.gameStatusDisplay.multiColor;
-	console.log(gameSave);
 }
 
 // récupération de la sauvegarde si elle est présente
