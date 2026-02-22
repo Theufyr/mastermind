@@ -8,6 +8,10 @@
   font-family: Main;
   src: url(../assets/fonts/Junicode.ttf);
 }
+@font-face {
+  font-family: Classic;
+  src: url(../assets/fonts/verdanab.ttf);
+}
 
 :root {
 	/* Mobile-first */
@@ -220,8 +224,9 @@ div {
     text-align: center;
 }
 .pawn {
+    font-family: Classic;
     font-size: 3rem;
-    line-height: 0.05;
+    line-height: 0.3;
 }
 .result {
     font-size: 1rem;
