@@ -13,7 +13,7 @@
 	/* Mobile-first */
     font-size: 14px;
     min-width: 430px;
-    width: 100%;
+    width: 100vw;
 
     /* Custom properties */
     --color-01: #382d01;
