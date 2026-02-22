@@ -12,7 +12,7 @@
 :root {
 	/* Mobile-first */
     font-size: 14px;
-    min-width: 360px;
+    min-width: 430px;
     width: 100%;
 
     /* Custom properties */
@@ -26,7 +26,7 @@
     --color-08: green;
     --color-09: #00c8ff;
     --color-10: white;
-
+    --color-11: #4b9100;
 
     --background-01: #c7b155;
     --background-02: #c29c03;
@@ -36,7 +36,6 @@
     --background-06: #94ca5c;
     --background-07: #896e02;
 
-    
     --shadow-01: -0.1rem 0.2rem 0.5rem rgb(0, 0, 0, 0.5);
     --shadow-02: -0.1rem 0.2rem 0.3rem rgb(0, 0, 0, 0.5);
     --shadow-03: 0rem 0.1rem 0.2rem rgb(0, 0, 0, 0.5);
@@ -45,6 +44,7 @@
     font-family: Main;
     color: var(--color-01);
     background-color: var(--background-01);
+    scroll-behavior: smooth;
 }
 
 body {
@@ -65,7 +65,17 @@ header {
     padding: 0.1rem 0rem;
 }
 
-h1, h2, h3 {
+a:any-link {
+    font-size: 1.3rem;
+    font-family: Title;
+    text-decoration: overline;
+    text-shadow: var(--shadow-04);
+}
+a:hover {
+    text-decoration: underline;
+    color: var(--color-11);
+}
+h1, h2, h3, #game_scores_done, #game_scores_won, #game_scores_points {
     text-align: center;
 }
 h1 {
@@ -73,7 +83,7 @@ h1 {
     font-family: Title;
     text-shadow: var(--shadow-01);
 }
-h2 {
+h2, #game_scores_done, #game_scores_won, #game_scores_points, #s_triangle {
     font-size: 1.5rem;
     font-family: Title;
     text-shadow: var(--shadow-04);
@@ -82,6 +92,16 @@ h3 {
     font-size: 1.1rem;
     font-weight: bold;
     font-style: italic;
+}
+#score_points {
+    font-family: Title;
+    font-style: normal;
+}
+#score_explanations p:nth-child(4) {
+    margin-top: 0.5rem;
+}
+#game_scores_done, #game_scores_won, #game_scores_points {
+    font-size: 1.1rem;
 }
 .triangle {
     color: var(--background-03);
@@ -110,7 +130,7 @@ section, input, button {
     color: var(--background-03);
     background: var(--background-03);
 }
-button, #launch_game, #rules_title, #game_title,
+button, #rules_title, #score_points, #launch_game, #game_title,
 .dotblack, .dotwhite {
     cursor: pointer;
 }
@@ -124,7 +144,7 @@ button.checked, button:hover.checked {
     color: var(--color-08);
     background: linear-gradient(var(--background-05), var(--background-06));
 }
-#choose_game, #game_status {
+#choose_game, #game_status, #game_end {
     text-align: center;
 }
 section {
@@ -138,20 +158,20 @@ div {
 }
 
 /* board game */
-#game div, #game_status, #example, #example div {
+#game div, #game_status, #example, #example div, .watch_out {
     box-sizing: border-box;
     width: 100%;
     padding: 0.2rem;
     margin: 0 0 0.2rem 0;
 }
-#game_board, #example {
+#game_board, #example, .watch_out {
     justify-self: center;
     justify-items: center;
     color: var(--color-01);
     background-color: var(--background-02);
     border-radius: 0.5rem;
 }
-#game_board>div, #example>div {
+#game_board>div, #example>div, .watch_out {
     display:flex;
     flex:wrap;
     gap: 1rem;
@@ -220,6 +240,33 @@ div {
 }
 .white {
     color: var(--color-10);
+}
+.watch_out {
+    display: flex;
+    margin-top: 0.5rem;
+    padding: 0 0.2rem 0 0.2rem;
+    text-align: justify;
+    font-size: 0.9rem;
+    box-shadow: var(--shadow-03);
+    gap:0;
+}
+.watch_out div {
+    margin: 0 0 0.5rem 0.2rem;
+    padding: 0 0.5rem;
+}
+.watch_out div:first-child {
+    width: 2rem;
+    height: 2.2rem;
+    padding: 0 0.5rem 0.4rem 0.5rem;
+    margin-top: 0.5rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--color-02);
+    text-shadow: var(--shadow-01);
+    background: linear-gradient(var(--background-03), var(--color-01));
+    box-shadow: var(--shadow-03);
+    border-radius: 1.5rem;
 }
 
 /* Responsive */

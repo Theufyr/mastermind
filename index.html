@@ -41,6 +41,21 @@
 				<p>⇀ <span class="dotblack" title="Pion de la bonne couleur à la bonne place">◉</span> indique un pion de la bonne couleur à la bonne place</p>
 				<p>⇀ <span class="dotwhite" title="Pion de la bonne couleur à la mauvaise place">◎</span> indique un pion de la bonne couleur à la mauvaise place</p>
 				<p>⇀ pas d'indication si la couleur du pion n'existe pas dans la combinaison</p>
+				<div class="watch_out">
+					<div>!</div>
+					<div>
+						Si elle est présente plusieurs fois dans la proposition, une bonne couleur sera toujours indiquée même si elle n'est présente qu'une fois dans la combinaison.
+					</div>
+				</div>
+				<h3 id="score_points"><span id="s_triangle" class="triangle">▸</span> Calcul des scores</h3>
+				<div id="score_explanations">
+					<p><b>Partie jouée (gagnée ou perdue) :</b></p>
+					<p>⇀ Chaque pion deviné en fin de partie fait gagner <b>1 point</b></p>
+					<p>⇀ <b>+1 point</b> si les couleurs pouvaient être répétées</p>
+					<p><b>Partie gagnée :</b></p>
+					<p>⇀ <b>+1 point</b> car la partie est gagnée</p>
+					<p>⇀ <b>+1 point</b> par coups non utilisés (en nombre de pions)</p>
+				</div>
 			</div>
 		</section>
 	</header>
@@ -62,10 +77,19 @@
 			</div>
 		</form>
 	</section>
+	<section>
+		<h2>Scores</h2>
+		<p id="game_scores_done"></p>
+		<p id="game_scores_won"></p>
+		<p id="game_scores_points"></p>
+	</section>
 	<section id="game">
 		<h2 id="game_title"><span id="gt_triangle" class="triangle">▸</span> Plateau de jeu</h2>
 		<p id="game_status"></p>
 		<div id="game_board">
+		</div>
+		<div id="game_end">
+			<a id="end_message" href="#launch_game"></a>
 		</div>
 	</section>
 </body>
