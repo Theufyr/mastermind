@@ -1,19 +1,22 @@
 import deepCopy from './utils/deepCopy.js';
 import shuffleArray from './utils/shuffleArray.js';
 import updateScores from './utils/updateScores.js';
+import useLocalStorage from './utils/useLocalStorage.js';
 
 // SCORES
 // on garde en mémoire :
 // done: le nombre de parties effectuées et celles gagnées
 // won: le nombre de parties gagnées
 // points: le nombre total de pions devinés (+1 si les couleurs pouvaient être répétées)
-const scores = {
+const scoresSave = {
 	done: 0,
 	won: 0,
 	points: 0
 }
 
-// DECLARATION DE L'ETAT DU JEU
+
+// VALEURS PAR DEFAUT DU JEU
+// couleurs utilisables dans le jeu
 const colorsList = ["black", "brown", "red", "orange", "yellow", "green", "blue", "white"];
 const colorsFr = {
 	black: "Noir",
@@ -28,6 +31,7 @@ const colorsFr = {
 
 // on met en mémoire la combinaison secrète
 const secretCode = [];
+
 // on met en mémoire le type de partie
 // nombre de couleurs à deviner
 // si les couleurs peuvent être répétées
@@ -35,15 +39,26 @@ const secretCode = [];
 const gameType = {
 	pawnTotal: 2,
 	multiColor: false,
-	winPawns: 0
+	winPawns: 0,
+	active: false
 }
+const gameStatusDisplay = {
+	pawnTotal: "",
+	multiColor: ""
+};
+
+
 // on met en mémoire les couleurs choisies à chaque ligne
-// 5 lignes en clés dont les valeurs sont un tableau contenant
-// la validation (faite : Y, ou pas : N) et les couleurs des 5 pions possibles
+// 12 lignes en clés qui correspondent au nombre de coups autorisés dans une partie
+// chaque clé aura comme valeur un tableau contenant :
+// - la validation de la ligne (faite : Y, ou pas : N)
+// - la couleur des 5 pions possibles dans cette ligne
 // [N/Y, couleur du pion 1, couleur du pion 2... ]
-let boardMemory = [
-	["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"],
-];
+// par défaut seulement ["N"] car les couleurs n'ont pas encore été choisies
+const boardMemory = [];
+for (let i = 0; i < 12; i++) {
+	boardMemory[i] = ["N"];
+}
 
 
 // PREPARATION DES AFFICHAGES
@@ -56,6 +71,7 @@ document.getElementById("rules_title").addEventListener('click', () => {
 	rules.style.display = (rules.style.display == "block") ? "none" : "block";
 	rulesT.textContent = (rules.style.display == "block") ? "▾" : "▸";
 });
+
 // affichage du calcul des scores
 const scoreExplanations = document.getElementById("score_explanations");
 scoreExplanations.style.display = "none";
@@ -81,16 +97,15 @@ const inputNumber = document.getElementById("colors_nb");
 inputNumber.value = 2;
 const inputMultiColors = document.getElementById("multi_colors");
 inputMultiColors.checked = false;
-const gameStatus = document.getElementById("game_status");
-gameStatus.textContent = "";
 
 // affichage des scores
 const gameScoresDone = document.getElementById("game_scores_done");
-gameScoresDone.textContent = updateScores("done", scores);
 const gameScoresWon = document.getElementById("game_scores_won");
-gameScoresWon.textContent = updateScores("won", scores);
 const gameScoresPoints = document.getElementById("game_scores_points");
-gameScoresPoints.textContent = updateScores("points", scores);
+
+// affichage du type de partie
+const gameStatusPawns = document.getElementById("game_status_pawns");
+const gameStatusMulti = document.getElementById("game_status_multi");
 
 // plateau de jeu
 const gameDisplay = document.getElementById("game");
@@ -101,7 +116,8 @@ const boardGameT = document.getElementById("gt_triangle");
 boardGameT.textContent = "▸";
 document.getElementById("game_title").addEventListener('click', () => {
 	boardGame.style.display = (boardGame.style.display == "block") ? "none" : "block";
-	gameStatus.style.display = boardGame.style.display;
+	gameStatusPawns.style.display = boardGame.style.display;
+	gameStatusMulti.style.display = boardGame.style.display;
 	boardGameT.textContent = (boardGame.style.display == "block") ? "▾" : "▸";
 });
 
@@ -115,6 +131,51 @@ endMessage.addEventListener('click', () => {
 	chooseGameT.textContent = "▾";
 });
 
+
+// SAUVEGARDE EN LocalStorage
+// clés à vérifier ou créer
+const gameSave = {
+	scoresSave: scoresSave,
+	secretCode: secretCode,
+	gameType: gameType,
+	boardMemory: boardMemory,
+	gameStatusDisplay: gameStatusDisplay
+};
+
+// automatisation de la mise à jour de sauvegarde
+function saveUpdate(saving = false) {
+	const localSave = useLocalStorage(gameSave, saving);
+	for (const saveVerif in localSave) {
+		gameSave[saveVerif] = localSave[saveVerif];
+	}
+	// affichage des scores
+	gameScoresDone.textContent = updateScores("done", gameSave.scoresSave);
+	gameScoresWon.textContent = updateScores("won", gameSave.scoresSave);
+	gameScoresPoints.textContent = updateScores("points", gameSave.scoresSave);
+	// affichage du type de partie
+	gameStatusPawns.textContent = gameSave.gameStatusDisplay.pawnTotal;
+	gameStatusMulti.textContent = gameSave.gameStatusDisplay.multiColor;
+	console.log(gameSave);
+}
+
+// récupération de la sauvegarde si elle est présente
+// ou création avec valeurs par défaut
+saveUpdate();
+
+// réinitialisation de la sauvegarde des scores
+const reinit = document.getElementById("reinit");
+reinit.addEventListener('click', (target) => {
+	target.preventDefault();
+	// on remet les scores à 0
+	gameSave.scoresSave.done = 0;
+	gameSave.scoresSave.won = 0;
+	gameSave.scoresSave.points = 0;
+	gameScoresDone.textContent = updateScores("done", gameSave.scoresSave);
+	gameScoresWon.textContent = updateScores("won", gameSave.scoresSave);
+	gameScoresPoints.textContent = updateScores("points", gameSave.scoresSave);
+	// on met à jour la sauvegarde
+	saveUpdate(true);
+});
 
 
 // CREATION DU PLATEAU DE JEU
@@ -144,7 +205,7 @@ function boardDisplay() {
 			sendColors.className = "off";
 			sendColors.title = "";
 			// ligne à valider
-			const valid = boardMemory[i][0];
+			const valid = gameSave.boardMemory[i][0];
 			// si la ligne est en cours, le bouton pour valider est actif
 			if ((activeLine === "no") && (valid === "N")) {
 				activeLine = "current";
@@ -152,7 +213,9 @@ function boardDisplay() {
 				sendColors.title = "Valider les choix de couleurs";
 				sendColors.addEventListener('click', () => {
 					// on garde en mémoire la validation
-					boardMemory[i][0] = "Y";
+					gameSave.boardMemory[i][0] = "Y";
+					// on met à jour la sauvegarde
+					saveUpdate(true);
 					// on actualise le plateau de jeu
 					boardDisplay();
 				});
@@ -170,21 +233,21 @@ function boardDisplay() {
 				pawn.id = "pawn_" + j;
 				pawn.className = "pawn";
 				let pawnColor = 0;
-				const currentColor = (boardMemory[i][j] !== undefined) ? boardMemory[i][j] : pawnColor;
+				const currentColor = (gameSave.boardMemory[i][j] !== undefined) ? gameSave.boardMemory[i][j] : pawnColor;
 				// on ne colore le pion que s'il est dans la partie
-				if (j <= gameType.pawnTotal) {
+				if (j <= gameSave.gameType.pawnTotal) {
 					pawn.classList.add(colorsList[currentColor]);
 					pawn.title = colorsFr[colorsList[currentColor]];
 				}
 				// si ce pion est dans la partie et
 				// si ce pion est dans la ligne active et qu'elle n'a pas été validée
-				if ((j <= gameType.pawnTotal) && (activeLine === "current")) {
-					pawnColor = (boardMemory[i][j] !== undefined) ? boardMemory[i][j] : pawnColor;
+				if ((j <= gameSave.gameType.pawnTotal) && (activeLine === "current")) {
+					pawnColor = (gameSave.boardMemory[i][j] !== undefined) ? gameSave.boardMemory[i][j] : pawnColor;
 					// on garde en mémoire la nouvelle couleur
-					if (boardMemory[i][j] === undefined) {
-						boardMemory[i].push(pawnColor);
+					if (gameSave.boardMemory[i][j] === undefined) {
+						gameSave.boardMemory[i].push(pawnColor);
 					} else {
-						boardMemory[i][j] = pawnColor;
+						gameSave.boardMemory[i][j] = pawnColor;
 					}
 					pawn.classList.remove(colorsList[currentColor]);
 					pawn.classList.add(colorsList[pawnColor]);
@@ -201,7 +264,7 @@ function boardDisplay() {
 						// on change le nom du pion avec celui de la nouvelle couleur
 						pawn.title = colorsFr[colorsList[nextColor]] + ", cliquer pour changer de couleur";
 						// on garde en mémoire la nouvelle couleur
-						boardMemory[i][j] = nextColor;
+						gameSave.boardMemory[i][j] = nextColor;
 					});
 				}
 				linePawns.appendChild(pawn);
@@ -212,18 +275,18 @@ function boardDisplay() {
 				result.className = "result";
 				// si ce pion est dans la partie et
 				// si la ligne est validée, on affiche les résultats
-				if ((j <= gameType.pawnTotal) && (valid === "Y")) {
-					if (secretCode.includes(colorsList[currentColor])) {
+				if ((j <= gameSave.gameType.pawnTotal) && (valid === "Y")) {
+					if (gameSave.secretCode.includes(colorsList[currentColor])) {
 						// couleur présente dans la combinaison secrète
 						let dotColor = "dotwhite";
 						result.title = "Pion de la bonne couleur à la mauvaise place";
 						// couleur à la bonne place
-						if (secretCode[j - 1] === colorsList[currentColor]) {
+						if (gameSave.secretCode[j - 1] === colorsList[currentColor]) {
 							result.textContent = "◉";
 							dotColor = "dotblack";
 							result.title = "Pion de la bonne couleur à la bonne place";
 							// on comptabilise le pion gagnant
-							++gameType.winPawns;
+							++gameSave.gameType.winPawns;
 						}
 						result.classList.add(dotColor);
 					}
@@ -238,21 +301,24 @@ function boardDisplay() {
 			lineAll.appendChild(sendColors);
 			boardGame.appendChild(lineAll);
 			// partie gagnée
-			if (gameType.winPawns === gameType.pawnTotal) {
+			if (gameSave.gameType.winPawns === gameSave.gameType.pawnTotal) {
 				endMessage.textContent = `Bravo ! Partie gagnée !`;
 				gameEnd.style.display = "block";
+				gameSave.gameType.active = false;
 				// on met à jour les scores
-				++scores.done;
-				++scores.won;
+				++gameSave.scoresSave.done;
+				++gameSave.scoresSave.won;
 				// points gagnés : nombre de pions devinés (+1 si les couleurs pouvaient être répétées)
-				scores.points += (gameType.multiColor) ? (gameType.pawnTotal + 1) : gameType.pawnTotal;
+				gameSave.scoresSave.points += (gameSave.gameType.multiColor) ? (gameSave.gameType.pawnTotal + 1) : gameSave.gameType.pawnTotal;
 				// +1 point pour avoir gagné la partie
-				++scores.points
+				++gameSave.scoresSave.points
 				// +1 par coups non utilisés (en nombre de pions)
-				scores.points += ((11 - i) * gameType.pawnTotal);
-				gameScoresDone.textContent = updateScores("done", scores);
-				gameScoresWon.textContent = updateScores("won", scores);
-				gameScoresPoints.textContent = updateScores("points", scores);
+				gameSave.scoresSave.points += ((11 - i) * gameSave.gameType.pawnTotal);
+				//on sauvegarde
+				saveUpdate(true);
+				gameScoresDone.textContent = updateScores("done", gameSave.scoresSave);
+				gameScoresWon.textContent = updateScores("won", gameSave.scoresSave);
+				gameScoresPoints.textContent = updateScores("points", gameSave.scoresSave);
 				// partie finie, on empêche d'activer une autre ligne
 				activeLine = "done";
 			// partie perdue
@@ -261,21 +327,25 @@ function boardDisplay() {
 				if ((i === 11) && (activeLine !== "done")) {
 					endMessage.textContent = `Partie perdue, retente ta chance !`;
 					gameEnd.style.display = "block";
+					gameSave.gameType.active = false;
 					// on met à jour les scores
-					++scores.done;
+					++gameSave.scoresSave.done;
 					// points gagnés : nombre de pions devinés (+1 si les couleurs pouvaient être répétées)
-					scores.points += (gameType.multiColor) ? (gameType.pawnTotal + 1) : gameType.pawnTotal;
-					gameScoresDone.textContent = updateScores("done", scores);
-					gameScoresWon.textContent = updateScores("won", scores);
-					gameScoresPoints.textContent = updateScores("points", scores);
+					gameSave.scoresSave.points += (gameSave.gameType.multiColor) ? (gameSave.gameType.pawnTotal + 1) : gameSave.gameType.pawnTotal;
+					//on sauvegarde
+					saveUpdate(true);
+					gameScoresDone.textContent = updateScores("done", gameSave.scoresSave);
+					gameScoresWon.textContent = updateScores("won", gameSave.scoresSave);
+					gameScoresPoints.textContent = updateScores("points", gameSave.scoresSave);
 				}
 			}
 			// on réinitialise le nombre de pions gagnés pour le traitement de la prochaine ligne
-			gameType.winPawns = 0;
+			gameSave.gameType.winPawns = 0;
 		}
 	}
 	boardGameT.textContent = "▾";
-	gameStatus.style.display = "block";
+	gameStatusPawns.style.display = "block";
+	gameStatusMulti.style.display = "block";
 	boardGame.style.display = "block";
 	gameDisplay.style.display = "block";
 }
@@ -292,9 +362,10 @@ chooseGame.addEventListener('submit', (target) => {
 		const colorsType = (!multiColors) ? "ne peut pas" : "peut";
 
 		// sauvegarde des paramètres de la partie
-		gameType.pawnTotal = colorChoice;
-		gameType.multiColor = multiColors;
-		gameType.winPawns = 0;
+		gameSave.gameType.pawnTotal = colorChoice;
+		gameSave.gameType.multiColor = multiColors;
+		gameSave.gameType.winPawns = 0;
+		gameSave.gameType.active = true;
 
 		// on réinitialise le formulaire
 		inputNumber.value = 2;
@@ -310,7 +381,8 @@ chooseGame.addEventListener('submit', (target) => {
 
 		// création de la combinaison de couleurs
 		// on réinitialise le code secret avant d'en créer un nouveau
-		secretCode.length = 0;
+		gameSave.secretCode.length = 0;
+		
 		// on ne touche pas au tableau originel des couleurs
 		// on le copie pour faire le mélange de couleurs
 		// (en Deep Copy indépendante qui n'altèrera pas l'original quand il est modifié)
@@ -326,22 +398,40 @@ chooseGame.addEventListener('submit', (target) => {
 				// on retire du tableau mélangé celle qui a été choisie
 				// pour qu'elle ne ressorte pas au prochain tirage
 				const singleColor = colorsShuffled.splice(0, 1);
-				secretCode.push(singleColor[0]);
+				gameSave.secretCode.push(singleColor[0]);
 			// couleurs multiples
 			} else {
 				// on mélange le tableau des couleurs et on choisi la première
-				secretCode.push(colorsShuffled[0]);
+				gameSave.secretCode.push(colorsShuffled[0]);
 			}
 		}
 		
 		// affichage du type de partie générée
-		gameStatus.textContent = `Combinaison de span ${colorChoice} pions à deviner, une couleur ${colorsType} être présente plusieurs fois dans la combinaison.`;
+		gameSave.gameStatusDisplay.pawnTotal = `Combinaison de ${colorChoice} pions à deviner.`;
+		gameSave.gameStatusDisplay.multiColor = `Une même couleur ${colorsType} être présente plusieurs fois dans la combinaison.`;
 		// réinitialisation de la mémoire
-		boardMemory = [
-			["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"], ["N"],
-		];
+		for (let i = 0; i < 12; i++) {
+			gameSave.boardMemory[i] = ["N"];
+		}
+		//on sauvegarde
+		saveUpdate(true);
 		// création du plateau de jeu
 		boardDisplay();
 	}
 });
 
+// PARTIE EN PAUSE
+// au chargement de la page, on vérifie si une partie était en cours
+if (gameSave.gameType.active) {
+	// on affiche le plateau de jeu directement
+	boardDisplay();
+	
+	// et on masque le formulaire
+	chooseGame.style.display = "none";
+	chooseGameT.textContent = "▸";
+	// on masque aussi les règles du jeu
+	rules.style.display = "none";
+	rulesT.textContent = "▸";
+	// et l'éventuel message de fin de partie
+	gameEnd.style.display = "none";
+}

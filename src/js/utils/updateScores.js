@@ -1,15 +1,15 @@
 export default function updateScores(type, scores) {
     // parties jouées
-    let pluriel = (scores.done > 1) ? "s" : "";
-    let message = `${scores.done} Partie${pluriel} effectuée${pluriel}`;
+    let plural = (scores.done > 1) ? "s" : "";
+    let message = `${scores.done} Partie${plural} effectuée${plural}`;
     // parties gagnées
     if (type === "won") {
-        pluriel = (scores.won > 1) ? "s" : "";
-        message = "\n" + `${scores.won} Partie${pluriel} gagnée${pluriel}`;
+        plural = (scores.won > 1) ? "s" : "";
+        message = "\n" + `${scores.won} Partie${plural} gagnée${plural}`;
     }
     if (type === "points") {
-        pluriel = (scores.points > 1) ? "s" : "";
-        message = "\n" + `${scores.points} Point${pluriel}`;
+        plural = (scores.points > 1) ? "s" : "";
+        message = "\n" + `${scores.points} Point${plural}`;
     }
     return message;
 }

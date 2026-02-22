@@ -64,16 +64,18 @@ header, button:hover {
 header {
     padding: 0.1rem 0rem;
 }
-
 a:any-link {
     font-size: 1.3rem;
+    color: var(--color-01);
     font-family: Title;
-    text-decoration: overline;
+    text-decoration: underline;
     text-shadow: var(--shadow-04);
 }
 a:hover {
-    text-decoration: underline;
     color: var(--color-11);
+}
+#reinit {
+    font-size: 1rem;
 }
 h1, h2, h3, #game_scores_done, #game_scores_won, #game_scores_points {
     text-align: center;
@@ -97,11 +99,18 @@ h3 {
     font-family: Title;
     font-style: normal;
 }
-#score_explanations p:nth-child(4) {
+#score_explanations p:nth-child(4), #score_explanations p:nth-child(7) {
     margin-top: 0.5rem;
 }
 #game_scores_done, #game_scores_won, #game_scores_points {
     font-size: 1.1rem;
+    color: var(--color-11);
+}
+#score_display {
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 0.2rem;
 }
 .triangle {
     color: var(--background-03);
@@ -144,7 +153,7 @@ button.checked, button:hover.checked {
     color: var(--color-08);
     background: linear-gradient(var(--background-05), var(--background-06));
 }
-#choose_game, #game_status, #game_end {
+#choose_game, #game_status_pawns, #game_status_multi, #game_end {
     text-align: center;
 }
 section {
@@ -158,11 +167,15 @@ div {
 }
 
 /* board game */
-#game div, #game_status, #example, #example div, .watch_out {
+#game div, #example, #example div, .watch_out {
     box-sizing: border-box;
     width: 100%;
     padding: 0.2rem;
     margin: 0 0 0.2rem 0;
+}
+#game div#game_status_pawns, #game div#game_status_multi {
+    width: 70%;
+    justify-self: center;
 }
 #game_board, #example, .watch_out {
     justify-self: center;

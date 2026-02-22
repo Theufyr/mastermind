@@ -55,6 +55,9 @@
 					<p><b>Partie gagnée :</b></p>
 					<p>⇀ <b>+1 point</b> car la partie est gagnée</p>
 					<p>⇀ <b>+1 point</b> par coups non utilisés (en nombre de pions)</p>
+					<p><b>Scores en mémoire :</b></p>
+					<p>⇀ Tes scores sont sauvegardés dans ton navigateur, si tu en changes, ils reprendront de <b>0</b>.</p>
+					<p>⇀ <a href="#reinit" id="reinit">Clique ici pour les réinitialiser</a> (attention, ils seront perdus)</p>
 				</div>
 			</div>
 		</section>
@@ -79,13 +82,16 @@
 	</section>
 	<section>
 		<h2>Scores</h2>
-		<p id="game_scores_done"></p>
-		<p id="game_scores_won"></p>
-		<p id="game_scores_points"></p>
+		<div id="score_display">
+			<p id="game_scores_done"></p>
+			<p id="game_scores_won"></p>
+			<p id="game_scores_points"></p>
+		</div>
 	</section>
 	<section id="game">
 		<h2 id="game_title"><span id="gt_triangle" class="triangle">▸</span> Plateau de jeu</h2>
-		<p id="game_status"></p>
+		<div id="game_status_pawns"></div>
+		<div id="game_status_multi"></div>
 		<div id="game_board">
 		</div>
 		<div id="game_end">
