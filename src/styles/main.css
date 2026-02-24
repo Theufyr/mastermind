@@ -32,7 +32,7 @@
     --color-08: green;
     --color-09: #00c8ff;
     --color-10: white;
-    --color-11: #4b9100;
+    --color-11: #3f7900;
 
     --background-01: #c7b155;
     --background-02: #c29c03;
@@ -46,7 +46,6 @@
     --shadow-02: -0.1rem 0.2rem 0.3rem rgb(0, 0, 0, 0.5);
     --shadow-03: 0rem 0.1rem 0.2rem rgb(0, 0, 0, 0.5);
     --shadow-04: 0rem 0.1rem 0.2rem rgba(255, 255, 255, 0.5);
-    --shadow-05: 0rem 0.05rem 0.1rem #896e02;
 
     font-family: Main;
     color: var(--color-01);
@@ -123,7 +122,7 @@ h3 {
 #game_scores_done, #game_scores_won, #game_scores_points {
     font-size: 1.1rem;
     color: var(--color-11);
-    text-shadow: var(--shadow-05);
+    text-shadow: var(--shadow-04);
 }
 #score_display {
     display:flex;
