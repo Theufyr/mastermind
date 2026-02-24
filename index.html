@@ -92,7 +92,23 @@
 			<h3>Choisis les particularités de la combinaison secrète :</h3>
 			<div>
 				<label for="colors_nb">Le nombre de pions à deviner (2 à 5)</label>
-				<input type="number" id="colors_nb" value="2" min="2" max="5" step="1">
+				<p id="checked_colors_nb"></p>
+				<input
+				type="range"
+				name="colors_nb"
+				id="colors_nb"
+				value="2"
+				min="2"
+				max="5"
+				step="1"
+				list="range_values">
+				</input>
+				<datalist id="range_values">
+					<option value="2" label="2"></option>
+					<option value="3" label="3"></option>
+					<option value="4" label="4"></option>
+					<option value="5" label="5"></option>
+				</datalist>
 			</div>
 			<div>
 				<p>Plus de difficulté :</p>

@@ -92,11 +92,17 @@ document.getElementById("launch_game").addEventListener('click', () => {
 	chooseGameT.textContent = (chooseGame.style.display == "block") ? "▾" : "▸";
 });
 
+
 // initialisation du formulaire
 const inputNumber = document.getElementById("colors_nb");
 inputNumber.value = 2;
 const inputMultiColors = document.getElementById("multi_colors");
 inputMultiColors.checked = false;
+const checkedColorsNb = document.getElementById("checked_colors_nb");
+checkedColorsNb.textContent = inputNumber.value;
+inputNumber.addEventListener("change", () => {
+    checkedColorsNb.textContent = inputNumber.value;
+});
 
 // affichage des scores
 const gameScoresDone = document.getElementById("game_scores_done");

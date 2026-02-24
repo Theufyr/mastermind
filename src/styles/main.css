@@ -46,6 +46,7 @@
     --shadow-02: -0.1rem 0.2rem 0.3rem rgb(0, 0, 0, 0.5);
     --shadow-03: 0rem 0.1rem 0.2rem rgb(0, 0, 0, 0.5);
     --shadow-04: 0rem 0.1rem 0.2rem rgba(255, 255, 255, 0.5);
+    --shadow-05: 0rem 0.05rem 0.1rem #896e02;
 
     font-family: Main;
     color: var(--color-01);
@@ -59,8 +60,18 @@ body {
     margin: 0;
 }
 
-b {
+b, #checked_colors_nb {
     font-weight: bold;
+}
+datalist {
+    margin: 0;
+    padding-left: 0.3rem;
+    width: 11rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    justify-self: center;
+    writing-mode: vertical-lr;
 }
 
 header, button:hover {
@@ -112,6 +123,7 @@ h3 {
 #game_scores_done, #game_scores_won, #game_scores_points {
     font-size: 1.1rem;
     color: var(--color-11);
+    text-shadow: var(--shadow-05);
 }
 #score_display {
     display:flex;
@@ -141,13 +153,20 @@ section, input, button {
     box-shadow: var(--shadow-03);
     border-radius: 0.5rem;
 }
+input#colors_nb {
+    width: 10rem;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+}
+
 #multi_colors {
     padding: 0 0.5rem;
     color: var(--background-03);
     background: var(--background-03);
 }
 button, #rules_title, #score_points, #launch_game, #game_title,
-.dotblack, .dotwhite {
+.dotblack, .dotwhite, input#colors_nb {
     cursor: pointer;
 }
 button.off, button:hover.off {
