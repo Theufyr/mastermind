@@ -2,7 +2,7 @@
   "name": "Mastermind",
   "short_name": "Mastermind",
   "display": "standalone",
-  "start_url": "/",
+  "start_url": "/mastermind/",
   "icons": [
     {
       "src": "./assets/icons/favicon512.png",
