@@ -1,10 +1,13 @@
-export default function useLocalStorage(gameSave, saving = false) {
+import type { typeGameSave } from '../interface.ts';
+
+export default function useLocalStorage(gameSave: typeGameSave, saving = false) {
     for (const saveVerif in gameSave) {
         // RECUPERATION
         if (!saving) {
             // si la sauvegarde est présente, on la récupère et on la remet au format JSON
-            if (localStorage.getItem(saveVerif) !== null) {
-                gameSave[saveVerif] = JSON.parse(localStorage.getItem(saveVerif));
+            const localSaveVerif = localStorage.getItem(saveVerif);
+            if (localSaveVerif !== null) {
+                gameSave[saveVerif] = JSON.parse(localSaveVerif);
             // sinon on la crée
             } else {
                 saving = true;
