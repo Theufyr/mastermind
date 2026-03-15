@@ -19,7 +19,7 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
-body {
+:root {
 	width: 100vw;
 	height: 100vh;
 	line-height: 1.5;
