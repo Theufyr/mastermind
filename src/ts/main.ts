@@ -2,6 +2,7 @@ import deepCopy from './utils/deepCopy.js';
 import shuffleArray from './utils/shuffleArray.js';
 import updateScores from './utils/updateScores.js';
 import useLocalStorage from './utils/useLocalStorage.js';
+import type { typeGameSave, typeColorsFr } from './interface.js';
 
 // SCORES
 // on garde en mémoire :
@@ -18,7 +19,7 @@ const scoresSave = {
 // VALEURS PAR DEFAUT DU JEU
 // couleurs utilisables dans le jeu
 const colorsList = ["black", "brown", "red", "orange", "yellow", "green", "blue", "white"];
-const colorsFr = {
+const colorsFr: typeColorsFr = {
 	black: "Noir",
 	brown: "Brun",
 	red: "Rouge",
@@ -30,7 +31,7 @@ const colorsFr = {
 };
 
 // on met en mémoire la combinaison secrète
-const secretCode = [];
+const secretCode: string | null[] = [];
 
 // on met en mémoire le type de partie
 // nombre de couleurs à deviner
@@ -63,64 +64,64 @@ for (let i = 0; i < 12; i++) {
 
 // PREPARATION DES AFFICHAGES
 // affichage des règles du jeu
-const rules = document.getElementById("rules");
+const rules = document.getElementById("rules")!;
 rules.style.display = "block";
-const rulesT = document.getElementById("r_triangle");
+const rulesT = document.getElementById("r_triangle")!;
 rulesT.textContent = "▾";
-document.getElementById("rules_title").addEventListener('click', () => {
+document.getElementById("rules_title")!.addEventListener('click', () => {
 	rules.style.display = (rules.style.display == "block") ? "none" : "block";
 	rulesT.textContent = (rules.style.display == "block") ? "▾" : "▸";
 });
 
 // affichage du calcul des scores
-const scoreExplanations = document.getElementById("score_explanations");
+const scoreExplanations = document.getElementById("score_explanations")!;
 scoreExplanations.style.display = "none";
-const scoreExplanationsT = document.getElementById("s_triangle");
+const scoreExplanationsT = document.getElementById("s_triangle")!;
 scoreExplanationsT.textContent = "▸";
-document.getElementById("score_points").addEventListener('click', () => {
+document.getElementById("score_points")!.addEventListener('click', () => {
 	scoreExplanations.style.display = (scoreExplanations.style.display == "block") ? "none" : "block";
 	scoreExplanationsT.textContent = (scoreExplanations.style.display == "block") ? "▾" : "▸";
 });
 
 // affichage du formulaire
-const chooseGame = document.getElementById("choose_game");
+const chooseGame = document.getElementById("choose_game")!;
 chooseGame.style.display = "block";
-const chooseGameT = document.getElementById("lg_triangle");
+const chooseGameT = document.getElementById("lg_triangle")!;
 chooseGameT.textContent = "▾";
-document.getElementById("launch_game").addEventListener('click', () => {
+document.getElementById("launch_game")!.addEventListener('click', () => {
 	chooseGame.style.display = (chooseGame.style.display == "block") ? "none" : "block";
 	chooseGameT.textContent = (chooseGame.style.display == "block") ? "▾" : "▸";
 });
 
 
 // initialisation du formulaire
-const inputNumber = document.getElementById("colors_nb");
-inputNumber.value = 2;
-const inputMultiColors = document.getElementById("multi_colors");
+const inputNumber = <HTMLInputElement>document.getElementById("colors_nb");
+inputNumber.value = "2";
+const inputMultiColors = <HTMLInputElement>document.getElementById("multi_colors")!;
 inputMultiColors.checked = false;
-const checkedColorsNb = document.getElementById("checked_colors_nb");
+const checkedColorsNb = document.getElementById("checked_colors_nb")!;
 checkedColorsNb.textContent = inputNumber.value;
 inputNumber.addEventListener("change", () => {
     checkedColorsNb.textContent = inputNumber.value;
 });
 
 // affichage des scores
-const gameScoresDone = document.getElementById("game_scores_done");
-const gameScoresWon = document.getElementById("game_scores_won");
-const gameScoresPoints = document.getElementById("game_scores_points");
+const gameScoresDone = document.getElementById("game_scores_done")!;
+const gameScoresWon = document.getElementById("game_scores_won")!;
+const gameScoresPoints = document.getElementById("game_scores_points")!;
 
 // affichage du type de partie
-const gameStatusPawns = document.getElementById("game_status_pawns");
-const gameStatusMulti = document.getElementById("game_status_multi");
+const gameStatusPawns = document.getElementById("game_status_pawns")!;
+const gameStatusMulti = document.getElementById("game_status_multi")!;
 
 // plateau de jeu
-const gameDisplay = document.getElementById("game");
+const gameDisplay = document.getElementById("game")!;
 gameDisplay.style.display = "none";
-const boardGame = document.getElementById("game_board");
+const boardGame = document.getElementById("game_board")!;
 boardGame.style.display = "none";
-const boardGameT = document.getElementById("gt_triangle");
+const boardGameT = document.getElementById("gt_triangle")!;
 boardGameT.textContent = "▸";
-document.getElementById("game_title").addEventListener('click', () => {
+document.getElementById("game_title")!.addEventListener('click', () => {
 	boardGame.style.display = (boardGame.style.display == "block") ? "none" : "block";
 	gameStatusPawns.style.display = boardGame.style.display;
 	gameStatusMulti.style.display = boardGame.style.display;
@@ -128,9 +129,9 @@ document.getElementById("game_title").addEventListener('click', () => {
 });
 
 // affichage de la fin de la partie
-const gameEnd = document.getElementById("game_end");
+const gameEnd = document.getElementById("game_end")!;
 gameEnd.style.display = "none";
-const endMessage = document.getElementById("end_message");
+const endMessage = document.getElementById("end_message")!;
 endMessage.addEventListener('click', () => {
 	// on raffiche le formulaire de choix de partie
 	chooseGame.style.display = "block";
@@ -140,7 +141,7 @@ endMessage.addEventListener('click', () => {
 
 // SAUVEGARDE EN LocalStorage
 // clés à vérifier ou créer
-const gameSave = {
+const gameSave: typeGameSave = {
 	scoresSave: scoresSave,
 	secretCode: secretCode,
 	gameType: gameType,
@@ -168,7 +169,7 @@ function saveUpdate(saving = false) {
 saveUpdate();
 
 // réinitialisation de la sauvegarde des scores
-const reinit = document.getElementById("reinit");
+const reinit = document.getElementById("reinit")!;
 reinit.addEventListener('click', (target) => {
 	target.preventDefault();
 	// on remet les scores à 0
@@ -210,7 +211,8 @@ function boardDisplay() {
 			sendColors.className = "off";
 			sendColors.title = "";
 			// ligne à valider
-			const valid = gameSave.boardMemory[i][0];
+			const boardMemorySave = gameSave.boardMemory[i]!;
+			const valid = boardMemorySave[0];
 			// si la ligne est en cours, le bouton pour valider est actif
 			if ((activeLine === "no") && (valid === "N")) {
 				activeLine = "current";
@@ -218,7 +220,7 @@ function boardDisplay() {
 				sendColors.title = "Valider les choix de couleurs";
 				sendColors.addEventListener('click', () => {
 					// on garde en mémoire la validation
-					gameSave.boardMemory[i][0] = "Y";
+					boardMemorySave[0] = "Y";
 					// on met à jour la sauvegarde
 					saveUpdate(true);
 					// on actualise le plateau de jeu
@@ -238,38 +240,38 @@ function boardDisplay() {
 				pawn.id = "pawn_" + j;
 				pawn.className = "pawn";
 				let pawnColor = 0;
-				const currentColor = (gameSave.boardMemory[i][j] !== undefined) ? gameSave.boardMemory[i][j] : pawnColor;
+				const currentColor = (boardMemorySave[j] !== undefined) ? boardMemorySave[j] as number : pawnColor;
 				// on ne colore le pion que s'il est dans la partie
 				if (j <= gameSave.gameType.pawnTotal) {
-					pawn.classList.add(colorsList[currentColor]);
-					pawn.title = colorsFr[colorsList[currentColor]];
+					pawn.classList.add(colorsList[currentColor]!);
+					pawn.title = colorsFr[colorsList[currentColor]!]!;
 				}
 				// si ce pion est dans la partie et
 				// si ce pion est dans la ligne active et qu'elle n'a pas été validée
 				if ((j <= gameSave.gameType.pawnTotal) && (activeLine === "current")) {
-					pawnColor = (gameSave.boardMemory[i][j] !== undefined) ? gameSave.boardMemory[i][j] : pawnColor;
+					pawnColor = (boardMemorySave[j] !== undefined) ? boardMemorySave[j] as number : pawnColor;
 					// on garde en mémoire la nouvelle couleur
-					if (gameSave.boardMemory[i][j] === undefined) {
-						gameSave.boardMemory[i].push(pawnColor);
+					if (boardMemorySave[j] === undefined) {
+						boardMemorySave.push(pawnColor);
 					} else {
-						gameSave.boardMemory[i][j] = pawnColor;
+						boardMemorySave[j] = pawnColor;
 					}
-					pawn.classList.remove(colorsList[currentColor]);
-					pawn.classList.add(colorsList[pawnColor]);
+					pawn.classList.remove(colorsList[currentColor]!);
+					pawn.classList.add(colorsList[pawnColor]!);
 					pawn.title += ", cliquer pour changer de couleur";
 					pawn.addEventListener('click', () => {
-						const actualColor = colorsList.indexOf(pawn.classList[1]);
+						const actualColor = colorsList.indexOf(pawn.classList[1]!);
 						// on retire la couleur actuelle
-						pawn.classList.remove(colorsList[actualColor]);
+						pawn.classList.remove(colorsList[actualColor]!);
 						// on affiche la couleur suivante de la liste
 						// ou on revient à la première si on est en fin de liste
 						let nextColor = (actualColor + 1);
 						nextColor = (actualColor >= 7) ? 0 : nextColor;
-						pawn.classList.add(colorsList[nextColor]);
+						pawn.classList.add(colorsList[nextColor]!);
 						// on change le nom du pion avec celui de la nouvelle couleur
-						pawn.title = colorsFr[colorsList[nextColor]] + ", cliquer pour changer de couleur";
+						pawn.title = colorsFr[colorsList[nextColor]!] + ", cliquer pour changer de couleur";
 						// on garde en mémoire la nouvelle couleur
-						gameSave.boardMemory[i][j] = nextColor;
+						boardMemorySave[j] = nextColor;
 					});
 				}
 				linePawns.appendChild(pawn);
@@ -281,7 +283,7 @@ function boardDisplay() {
 				// si ce pion est dans la partie et
 				// si la ligne est validée, on affiche les résultats
 				if ((j <= gameSave.gameType.pawnTotal) && (valid === "Y")) {
-					if (gameSave.secretCode.includes(colorsList[currentColor])) {
+					if (gameSave.secretCode.includes(colorsList[currentColor]!)) {
 						// couleur présente dans la combinaison secrète
 						let dotColor = "dotwhite";
 						result.title = "Pion de la bonne couleur à la mauvaise place";
@@ -373,7 +375,7 @@ chooseGame.addEventListener('submit', (target) => {
 		gameSave.gameType.active = true;
 
 		// on réinitialise le formulaire
-		inputNumber.value = 2;
+		inputNumber.value = "2";
 		inputMultiColors.checked = false;
 		// et on le masque
 		chooseGame.style.display = "none";
