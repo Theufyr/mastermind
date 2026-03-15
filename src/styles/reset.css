@@ -20,8 +20,8 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 :root {
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	min-height: 100dvh;
 	line-height: 1.5;
 	-webkit-font-smoothing: antialiased;
 }

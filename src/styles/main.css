@@ -16,9 +16,9 @@
 :root {
 	/* Mobile-first */
     font-size: 14px;
+	width: 100%;
     min-width: 320px;
-    max-width: 100vw;
-    width: 100vw;
+	min-height: 100dvh;
     margin: 0;
 
     /* Custom properties */
@@ -212,7 +212,7 @@ div {
 }
 #game_board>div, #example>div, .watch_out {
     display:flex;
-    flex:wrap;
+    flex-wrap:no-wrap;
     gap: 1rem;
 }
 #game_board>div>div, #example>div>div {
