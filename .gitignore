@@ -1,18 +1,23 @@
-# Editors & OS files
-.DS_Store
+### Editors & OS files ###
+*.DS_Store
 Thumbs.db
 desktop.ini
 .vscode/
 !.vscode/extensions.json
-.idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
-# Logs
+### miscellaneous ###
+__stuff/
+info.txt
+test.js
+
+### Logs ###
 logs
+/logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -20,14 +25,56 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Node
+### Node ###
 node_modules
 dist
 dist-ssr
 *.local
 .parcel-cache
+.env.example
+.env.local
+.env.staging
 
-# miscellaneous
-__stuff/
-info.txt
-test.js
+### Docker ###
+docker-compose.override.yml
+
+### PHP ###
+/vendor/
+composer.lock
+
+### PHPMyAdmin & MySQL data ###
+/mysql-data/
+*.sql.bak
+
+### Java ###
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+.idea/
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
