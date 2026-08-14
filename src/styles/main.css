@@ -73,7 +73,10 @@ datalist {
     justify-self: center;
     writing-mode: vertical-lr;
 }
-
+#range_block {
+    display: flex;
+    justify-content: center;
+}
 header, button:hover {
     color: var(--color-02);
     background: linear-gradient(var(--background-03), var(--color-01));
