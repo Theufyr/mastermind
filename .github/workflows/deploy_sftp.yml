@@ -1,0 +1,187 @@
+name: Deploy with SFTP
+
+# lors d'une pull request, on peut lancer des étapes comme le build,
+# ce qui permet de vérifer que tout se passe correctement avant de valider la pull request
+# ce n'est qu'au push qui s'en suit et qui reprend alors le workflow du début,
+# qu'on lance les étapes de connexion au serveur, effacement des dossiers, upload de mise à jour, etc
+#
+# pour que ces étapes ne soient pas appliquées lors de l'étude d'une pull request mais lors d'un push
+# on utilise cette condition :
+# if: github.event_name == 'push'
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+jobs:
+  sftp-deploy:
+    runs-on: ubuntu-latest
+    environment: theufyr-com
+
+    # -------------------------------------------------------------------------
+    # variables d'environnement pour tous les steps du job
+
+    # pour le bon fonctionnement de ce workflow
+    # variables à renseigner impérativement
+    # dans l'environnement du dépôt GitHub qu'on déclare ci-dessus
+    
+    # on force l'utilisation de la version 24
+    # car Node.js 20 supprimé du runner GitHub le 16 septembre 2026
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+    # et directement dans les steps dédiés :
+
+    # secrets.DEPLOY_PATH=
+    # secrets.SSH_SERVER=
+    # secrets.SSH_USER=
+
+    # secrets.SSH_PRIVATE_KEY=
+    # secrets.SSH_KNOWN_HOSTS=
+
+    # secrets.TELEGRAM_BOT_TOKEN=
+    # secrets.TELEGRAM_CHAT_ID=
+
+    steps:
+      # -------------------------------------------------------------------------
+      # Récupération du Repo
+      # -------------------------------------------------------------------------
+      # clone le Repo dans le runner (un dossier temporaire de GitHub Actions)
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------------------------------------------------------------------------
+      # SSH
+      # -------------------------------------------------------------------------
+      # configuration SSH
+      # attention : s'effectue dans le runner de GitHub Actions, pas sur le serveur
+      # ici, le tilde ~ vaut /home/runner pas /home/mon_compte_serveur
+      #
+      # known_hosts :
+      # - au préalable, mettre dans SSH_KNOWN_HOSTS la clé donnée par l'interface admin du serveur
+      #   ou récupérée lors d'un ssh-keyscan -H ${{ secrets.SSH_SERVER }} à la création du compte
+      #     on évite ainsi les attaques MITM (Man In The Middle)
+      #     pas de risques de réseau compromis par un attaquant qui ferait relai entre GitHub et le serveur
+      # - on évite StrictHostKeyChecking=no pour vérifier le serveur
+      # - on évite de récupérer le ssh-keyscan à chaque run pour peupler known_hosts
+      #   car ce pourrait être celui du MITM :
+      #     ssh-keyscan -H ${{ secrets.SSH_SERVER }} >> ~/.ssh/known_hosts
+      #   on se fie plutôt au secret GitHub Actions SSH_KNOWN_HOSTS :
+      #     echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+      #
+      # on n'injecte pas directement les variables GitHub dans le run pour éviter les injections
+      # on les transforme d'abord en variables d'environnement dans `env:` (valables uniquement dans le scope du step)
+      # - attention, ne fonctionne pas dans `with:`
+      - name: Configure SSH key
+        if: github.event_name == 'push'
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+
+      # -------------------------------------------------------------------------
+      # Déploiement avec SFTP
+      # -------------------------------------------------------------------------
+      # SFTP plutôt que rsync quand les shells SSH ne sont pas débloqués côté serveur
+      # script permettant de s'approcher des fonctionnalités de rsync :
+      # - compensation dans le runner car aucun shell côté serveur
+      # - authentification par clé SSH
+      # - suppression des fichiers obsolètes
+      # - upload de tout ou partie de l'app au choix
+
+      # ----------------------------------------------------------------------------
+      # Nettoyage
+      # ----------------------------------------------------------------------------
+      # effacement de tout le contenu du dossier de l'app
+      # pour ne pas laisser de fichiers orphelins entre les mises à jour
+      # sans effacer le dossier lui-même
+      # on fait appel à l'action `delete-remote` pour cela
+      # en lui envoyant les paramètres nécessaires
+      - name: Wipe app folder
+        if: github.event_name == 'push'
+        uses: Theufyr/actions-library/.github/actions/delete-remote@delete-remote/latest
+        with:
+          host: ${{ secrets.SSH_USER }}@${{ secrets.SSH_SERVER }}
+          key: ~/.ssh/deploy_key
+          dirs: ${{ secrets.DEPLOY_PATH }}
+          keep_root: 'true'
+          lang: 'fr'
+
+      # -------------------------------------------------------------------------
+      # FRONTEND
+      # -------------------------------------------------------------------------
+
+      # -------------------------------------------------------------------------
+      # Préparation Frontend
+      # -------------------------------------------------------------------------
+      # installation des dépendances frontend
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # npm ci plutôt que npm install récupère node_modules pour le runner et le build
+      # mais ne l'enverra pas sur le serveur
+      - name: Install frontend dependencies
+        run: npm ci
+
+      # build frontend
+      # ne pas oublier d'ajouter l'alias `"build": "tsc",` dans les "scripts" de package.json
+      - name: Build frontend
+        run: npm run build
+
+      # ----------------------------------------------------------------------------
+      # Déploiement Frontend
+      # on n'envoie pas le dossier src/ts
+      # donc on doit créer src/ sur le serveur, se déplacer dedans
+      # et y mettre seulement assets/ et styles/
+      # on se passe aussi d'envoyer les fichiers git, json et md
+      # ----------------------------------------------------------------------------
+      - name: Deploy frontend
+        if: github.event_name == 'push'
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_SERVER: ${{ secrets.SSH_SERVER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          sftp \
+            -i ~/.ssh/deploy_key \
+            $SSH_USER@$SSH_SERVER <<EOF
+
+          cd $DEPLOY_PATH
+
+          put index.html
+          put favicon.ico
+          put favicon.png
+          put manifest.json
+          put -R dist
+
+          mkdir src
+          cd src
+          put -R src/assets
+          put -R src/styles
+
+          bye
+          EOF
+
+      # ----------------------------------------------------------------------------
+      # Notification Telegram
+      # envoie la date et l'état (réussite/échec) en fin de workflow
+      # ----------------------------------------------------------------------------
+      - name: Telegram Notify
+        if: always()
+        uses: Theufyr/actions-library/.github/actions/telegram-notify@telegram-notify/latest
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          status: ${{ job.status }}
