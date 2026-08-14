@@ -3,4 +3,4 @@ Projet démarré sur un simple exercice d'algorythmie Javascript s'inspirant du 
 Extrapolation pour recréer le jeu original complet en interface web et en TypeScript.
 
 # Déploiement
-Le jeu peut être joué ici : https://theufyr.alwaysdata.net/mastermind/
+Le jeu peut être joué ici : https://theufyr.com/mastermind/
