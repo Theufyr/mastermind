@@ -42,8 +42,10 @@
 </head>
 
 <body>
+	<base target="_blank" />
 	<header>
-		<h1>Mastermind</h1>
+		<h1><a href="index.html" target="_self">Mastermind</a></h1>
+		<h2 class="propulse">propulsé par <a href="https://github.com/Theufyr">Theufyr</a></h2>
 		<section>
 			<h2 id="rules_title"><span id="r_triangle" class="triangle">▸</span> Règles du jeu</h2>
 			<div id="rules">
@@ -81,7 +83,7 @@
 					<p>⇀ <b>+1 point</b> par coups non utilisés (en nombre de pions)</p>
 					<p><b>Scores en mémoire :</b></p>
 					<p>⇀ Tes scores sont sauvegardés dans ton navigateur, si tu en changes, ils reprendront de <b>0</b>.</p>
-					<p>⇀ <a href="#reinit" id="reinit">Clique ici pour les réinitialiser</a> (attention, ils seront perdus)</p>
+					<p>⇀ <a href="#reinit" id="reinit" target="_self">Clique ici pour les réinitialiser</a> (attention, ils seront perdus)</p>
 				</div>
 			</div>
 		</section>
@@ -137,7 +139,7 @@
 		<div id="game_board">
 		</div>
 		<div id="game_end">
-			<a id="end_message" href="#launch_game"></a>
+			<a id="end_message" href="#launch_game" target="_self"></a>
 		</div>
 	</section>
 </body>
